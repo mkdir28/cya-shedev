@@ -1,0 +1,26 @@
+@app.route('/submit_command', methods=['POST'])
+def submit_command():
+    data = request.json
+    username = data.get("username")
+    user_input = data.get("command").strip().lower()
+
+    if username not in user_progress:
+        return jsonify({"error": "User not found"}), 400
+
+    if username not in user_scores:
+        user_scores[username] = {'theoretical': 0, 'practical': 0}
+
+    current_step = user_progress[username]["current_step"]
+    steps = ctf_challenges["escalate_privileges"]["steps"]
+
+    if current_step >= len(steps):
+        return jsonify({"message": "🎉 Challenge completed!", "completed": True})
+
+    correct_answer = steps[current_step]["correct_answer"].lower()
+
+    if user_input == correct_answer:
+        user_progress[username]["current_step"] += 1
+        user_scores[username]['practical'] += 10  # ✅ Award 10 points per correct answer
+        return jsonify({"message": "✅ Correct!", "next_step": user_progress[username]["current_step"], "completed": False})
+    else:
+        return jsonify({"message": "❌ Incorrect. Try again.", "completed": False})

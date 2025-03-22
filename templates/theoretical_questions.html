@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theoretical Questions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f7f4;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #2d6a4f;
+            margin-bottom: 40px;
+        }
+
+        .question-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 80%;
+            margin: 0 auto;
+            max-width: 600px;
+        }
+
+        .question-container input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1.2em;
+        }
+
+        .question-container label {
+            font-size: 1.2em;
+            color: #2d6a4f;
+            text-align: left;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .question-container button {
+            padding: 15px 30px;
+            background-color: #2d6a4f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .question-container button:hover {
+            background-color: #1d4e39;
+        }
+
+        .question-container p {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .question-container .question {
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+            .question-container {
+                padding: 20px;
+                width: 90%;
+            }
+            .question-container button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Hello, {{ username }}! Please answer the following theoretical questions:</h1>
+
+    <div class="question-container">
+        <form id="theoreticalForm">
+            <input type="hidden" id="username" value="{{ username }}"> <!-- Use the passed username -->
+
+            <!-- Question 1: Kali Linux -->
+            <div class="question">
+                <label for="q1">What is the command to connect securely to remote server via SSH?</label>
+                <input type="text" id="q1" name="answers[q1]" required>
+            </div>
+
+            <!-- Question 2: Network Security -->
+            <div class="question">
+                <label for="q2">How can you check which users are currently logged into a Linux system?</label>
+                <input type="text" id="q2" name="answers[q2]" required>
+            </div>
+
+            <!-- Question 3: Web Security -->
+            <div class="question">
+                <label for="q3">What is the purpose of the cat command, and how can it be used to display the contents of a file in Linux?</label>
+                <input type="text" id="q3" name="answers[q3]" required>
+            </div>
+
+            <!-- Question 4: Kali Linux (Advanced) -->
+            <div class="question">
+                <label for="q4">How do you check the current network interfaces and their IP addresses on a Linux system?</label>
+                <input type="text" id="q4" name="answers[q4]" required>
+            </div>
+
+            <!-- Question 5: Nmap -->
+            <div class="question">
+                <label for="q5">How do you use Nmap to scan a remote host for open ports?</label>
+                <input type="text" id="q5" name="answers[q5]" required>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="button" onclick="submitAnswers()">Submit Answers</button>
+        </form>
+    </div>
+
+    <script>
+        // Replace with the actual username dynamically
+        document.getElementById("usernameDisplay").textContent = "JohnDoe";  // Replace with actual dynamic username
+
+        function submitAnswers() {
+            const form = document.getElementById("theoreticalForm");
+            const formData = new FormData(form);
+            const username = document.getElementById("username").value;
+            const answers = {};
+
+            // Collecting the form answers
+            formData.forEach((value, key) => {
+                const answerKey = key.match(/answers\[(.*?)\]/)[1];
+                answers[answerKey] = value;
+            });
+
+            // Send the answers to the backend
+            fetch('/submit_theoretical', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: username,
+                    answers: answers
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message); // Show message from the server
+                // Ensure the username is passed correctly for the score page
+                window.location.href = "/score_dashboard?username=" + username;  // Redirect to score dashboard after submission
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("An error occurred. Please try again.");
+            });
+        }
+    </script>
+
+</body>
+</html>
